@@ -33,10 +33,10 @@ def sum_without_nan(df):
 def select_time(df, periods, leap=False):
     start = pd.to_datetime(periods[0])
     end = pd.to_datetime(periods[1])
-    df.index = pd.to_datetime(df.index)  # 时间列格式转换
-    df = df[(df.index >= start) & (df.index <= end)]
+    df.min_ac = pd.to_datetime(df.min_ac)  # 时间列格式转换
+    df = df[(df.min_ac >= start) & (df.min_ac <= end)]
     if leap:
-        df = df[~((df.index.month == 2) & (df.index.day == 29))]
+        df = df[~((df.min_ac.month == 2) & (df.min_ac.day == 29))]
     return df
 
 def get_spatial_info(input_file: str) -> (np.ndarray, np.ndarray):
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                     data["Date"] = pd.to_datetime(data["Date"])
                     if temporal == "multi-year":
                         data = data.groupby(data["Date"].apply(lambda x: x.year)).agg(how2hightempor).mean(axis=0)
-                        data.index = data.index.rename("Date")
+                        data.min_ac = data.min_ac.rename("Date")
                         data = pd.DataFrame(data=data[var], index=["Avg"], columns=[station])
                         df = pd.concat([df, data], axis=1)
                     else:
@@ -179,12 +179,12 @@ if __name__ == '__main__':
                             data = data.groupby(
                                 [data["Date"].apply(lambda x: x.year), data["Date"].apply(lambda x: x.month)]).agg(
                                 how2hightempor)
-                            data.index = ['-'.join(np.asarray(ind).astype(str)).strip() for ind in data.index.values]
+                            data.min_ac = ['-'.join(np.asarray(ind).astype(str)).strip() for ind in data.min_ac.values]
                         elif temporal == "daily":
                             data = data.set_index("Date")
                         else:
                             raise Exception("仅支持年、月、日尺度聚合，其他时间尺度需修改代码")
-                        data.index = data.index.rename("Date")
+                        data.min_ac = data.min_ac.rename("Date")
                         df = pd.concat([df, data[var]], axis=1)
                         df = df.rename(columns={var: station})
                 if df.shape[0] == 0:

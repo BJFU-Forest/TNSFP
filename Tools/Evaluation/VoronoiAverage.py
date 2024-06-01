@@ -76,7 +76,7 @@ def clip_voronoi(regions, vertices, box):
 
 def getVoronoiAverage(data, location_info, boundary):
     # 匹配相同站点
-    stationIDs = location_info.index.values
+    stationIDs = location_info.min_ac.values
     stationIDs = [_id for _id in data.columns.values if _id in stationIDs]
     data = data[stationIDs]
     # 绘制泰森多边形, 计算站点控制面积(权重)
@@ -94,6 +94,6 @@ def getVoronoiAverage(data, location_info, boundary):
 
 if __name__ == "__main__":
     location_info = pd.read_csv(r"../../dataFile/Station/气象站.csv")
-    boundary = r"../dataFile/Boundary/Jlboundary.shp"
+    boundary = r"..\dataFile\Boundary\Jlboundary.shp"
     data = None
     getVoronoiAverage(data, location_info, boundary)
